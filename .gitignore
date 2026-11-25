@@ -1,0 +1,11 @@
+out/
+ios/build/
+ios/TVPad.xcodeproj/
+ios/Info.plist
+ios/Payload/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+art/*_raw.png
+.DS_Store

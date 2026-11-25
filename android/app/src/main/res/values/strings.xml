@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV 手柄</string>
+    <string name="a11y_desc">允许 TV 手柄把手机发来的虚拟按键注入到电视屏幕上，用于操作游戏。</string>
+</resources>
