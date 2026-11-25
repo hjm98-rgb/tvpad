@@ -33,6 +33,11 @@ targets:
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
         NSLocalNetworkUsageDescription: "需要局域网权限，才能发现同一 WiFi 下的电视并发送虚拟按键。"
         NSBonjourServices:
           - "_tvpad._tcp"
@@ -41,7 +46,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.moustache.tvpad
         PRODUCT_NAME: TVPad
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Manual
         CODE_SIGNING_ALLOWED: NO
         CODE_SIGNING_REQUIRED: NO
