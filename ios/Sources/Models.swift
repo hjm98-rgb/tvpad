@@ -28,6 +28,9 @@ struct PadButton: Identifiable {
     /// 直径，相对 min(宽, 高)
     var size: Double
     var tint: String = "normal"
+    /// 手机上画在哪儿（不填就跟电视坐标一致），-1 表示沿用 x/y
+    var px: Double = -1
+    var py: Double = -1
 }
 
 struct PadPreset: Identifiable {
@@ -59,18 +62,19 @@ enum Presets {
 
     static let minecraftJava = PadPreset(
         name: "我的世界 Java 版",
-        note: "给 PojavLauncher / Java 版启动器用的默认触屏布局",
+        note: "PojavLauncher 默认控件：左下 W/A/S/D 十字键、右下跳跃(空格)、十字中心潜行(Shift)、点屏幕=攻击",
         buttons: [
-            b("移动", .stick, 0.15, 0.60, 0.34),
-            b("攻击", .hold, 0.86, 0.58, 0.17, "green"),
-            b("使用", .hold, 0.86, 0.84, 0.15, "blue"),
-            b("跳跃", .hold, 0.63, 0.87, 0.14),
-            b("潜行", .hold, 0.27, 0.90, 0.13),
-            b("疾跑", .hold, 0.09, 0.30, 0.12),
-            b("背包", .tap, 0.95, 0.20, 0.11, "yellow"),
-            b("丢弃", .tap, 0.95, 0.37, 0.10, "red"),
-            b("物品上", .tap, 0.55, 0.10, 0.09),
-            b("物品下", .tap, 0.66, 0.10, 0.09)
+            // 电视坐标全部按 Pojav 默认布局公式算出：控件 100px、边距 20px、屏幕 1920x1080
+            PadButton(label: "上", kind: .hold, x: 0.099, y: 0.713, size: 0.14, tint: "normal", px: 0.12, py: 0.30),
+            PadButton(label: "下", kind: .hold, x: 0.099, y: 0.935, size: 0.14, tint: "normal", px: 0.12, py: 0.52),
+            PadButton(label: "左", kind: .hold, x: 0.037, y: 0.824, size: 0.14, tint: "normal", px: 0.045, py: 0.41),
+            PadButton(label: "右", kind: .hold, x: 0.161, y: 0.824, size: 0.14, tint: "normal", px: 0.195, py: 0.41),
+            PadButton(label: "潜行", kind: .hold, x: 0.099, y: 0.824, size: 0.13, tint: "blue", px: 0.30, py: 0.41),
+            PadButton(label: "跳跃", kind: .hold, x: 0.901, y: 0.824, size: 0.15, tint: "green", px: 0.87, py: 0.66),
+            PadButton(label: "背包", kind: .tap, x: 0.161, y: 0.935, size: 0.12, tint: "yellow", px: 0.90, py: 0.28),
+            PadButton(label: "攻击", kind: .tap, x: 0.55, y: 0.45, size: 0.16, tint: "green", px: 0.62, py: 0.30),
+            PadButton(label: "使用", kind: .hold, x: 0.70, y: 0.45, size: 0.14, tint: "blue", px: 0.80, py: 0.30),
+            PadButton(label: "视角", kind: .stick, x: 0.55, y: 0.55, size: 0.26, px: 0.55, py: 0.62)
         ]
     )
 

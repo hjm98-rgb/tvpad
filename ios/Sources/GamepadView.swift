@@ -113,7 +113,8 @@ struct GamepadView: View {
                         StickView(diameter: dia) { vector in
                             sendDrag(btn, vector: vector)
                         }
-                        .position(x: CGFloat(btn.x) * w, y: CGFloat(btn.y) * h)
+                        .position(x: CGFloat(btn.px < 0 ? btn.x : btn.px) * w,
+                                  y: CGFloat(btn.py < 0 ? btn.y : btn.py) * h)
                     } else {
                         PadButtonView(
                             button: btn,
@@ -131,7 +132,8 @@ struct GamepadView: View {
                                 model.client.send(["t": "release", "id": index])
                             }
                         )
-                        .position(x: CGFloat(btn.x) * w, y: CGFloat(btn.y) * h)
+                        .position(x: CGFloat(btn.px < 0 ? btn.x : btn.px) * w,
+                                  y: CGFloat(btn.py < 0 ? btn.y : btn.py) * h)
                     }
                 }
 
