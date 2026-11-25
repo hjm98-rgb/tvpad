@@ -1,0 +1,67 @@
+name: verify-apk
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: 装进模拟器跑一遍
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+
+      - name: Build debug APK
+        working-directory: android
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Boot emulator and smoke test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+          script: |
+            set -x
+            adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+            adb shell am start -n com.moustache.tvpad/.MainActivity
+            sleep 8
+            adb exec-out screencap -p > shot-1-waiting.png
+
+            adb shell settings put secure enabled_accessibility_services com.moustache.tvpad/com.moustache.tvpad.PadAccessibilityService
+            adb shell settings put secure accessibility_enabled 1
+            sleep 3
+            adb exec-out screencap -p > shot-2-a11y.png
+
+            adb forward tcp:47811 tcp:47811
+            python3 -c "
+import socket, time
+s = socket.create_connection(('127.0.0.1', 47811), timeout=5)
+print('HELLO:', s.recv(4096).decode('utf-8', 'ignore')[:200])
+for msg in ['{\"t\":\"tap\",\"x\":0.5,\"y\":0.5}', '{\"t\":\"press\",\"id\":1,\"x\":0.7,\"y\":0.7,\"hold\":true}', '{\"t\":\"release\",\"id\":1}', '{\"t\":\"drag\",\"x1\":0.2,\"y1\":0.8,\"x2\":0.3,\"y2\":0.7}']:
+    s.sendall((msg + '\n').encode())
+    time.sleep(0.4)
+time.sleep(1)
+s.close()
+print('EVENTS SENT OK')
+"
+            sleep 3
+            adb exec-out screencap -p > shot-3-after-events.png
+            adb shell dumpsys accessibility | grep -i "moustache" | head -5
+            adb logcat -d -s tvpad:* | tail -20
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verify-shots
+          path: shot-*.png
+          if-no-files-found: warn
