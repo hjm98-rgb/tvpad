@@ -1,0 +1,48 @@
+name: ios-only
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hello runner
+        run: |
+          sw_vers
+          xcodebuild -version
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build (no code signing)
+        working-directory: ios
+        run: |
+          set -e
+          xcodebuild \
+            -project TVPad.xcodeproj \
+            -scheme TVPad \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+      - name: Package IPA
+        run: |
+          set -e
+          cd ios
+          rm -rf Payload
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/TVPad.app Payload/
+          mkdir -p ../out
+          zip -qr "../out/TV手柄_遥控端_未签名.ipa" Payload
+          ls -l ../out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tvpad-ipa
+          path: ${{ github.workspace }}/out/*.ipa
